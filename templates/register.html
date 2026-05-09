@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Register</title>
+
+    <link rel="stylesheet"
+    href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body class="centered-page">
+
+<div class="orb"></div>
+
+<div class="card">
+
+    <div class="card-header">
+
+        <h1 class="card-title">
+            Register
+        </h1>
+
+        <p class="card-subtitle">
+            Create your student account.
+        </p>
+
+    </div>
+
+    <form method="POST" class="form">
+
+        <div class="field">
+
+            <label>Name</label>
+
+            <input
+            type="text"
+            name="name"
+            placeholder="Enter name"
+            required>
+
+        </div>
+
+        <div class="field">
+
+            <label>Email</label>
+
+            <input
+            type="email"
+            name="email"
+            placeholder="Enter email"
+            required>
+
+        </div>
+
+        <div class="field">
+
+            <label>Password</label>
+
+            <input
+            type="password"
+            name="password"
+            placeholder="Enter password"
+            required>
+
+        </div>
+
+        <div class="field">
+
+            <label>Interest</label>
+
+            <select name="interest">
+
+                <option>Python</option>
+                <option>AI</option>
+                <option>Web Development</option>
+                <option>Cyber Security</option>
+                <option>IoT</option>
+                <option>AWS</option>
+                <option>DevOps</option>
+
+            </select>
+
+        </div>
+
+        <button
+        type="submit"
+        class="btn btn-primary btn-full">
+
+            Register
+
+        </button>
+
+    </form>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Quiz</title>
+
+<link rel="stylesheet"
+href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body class="page">
+
+<div class="page-content">
+
+<h1 class="page-title">
+Quiz Module
+</h1>
+
+<div class="quiz-list">
+
+{% for q in questions %}
+
+<div class="quiz-card">
+
+<div class="quiz-number">
+Q
+</div>
+
+<div class="quiz-body">
+
+<div class="quiz-question">
+{{ q.question }}
+</div>
+
+<div class="quiz-answer-wrap">
+
+<div class="quiz-answer-label">
+Answer
+</div>
+
+<div class="quiz-answer">
+{{ q.answer }}
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+</body>
+</html>
