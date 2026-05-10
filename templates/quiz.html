@@ -1,44 +1,97 @@
+<!-- ========================= -->
+<!-- quiz.html -->
+<!-- ========================= -->
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz</title>
-</head>
-<body>
 
-<h1>Quiz</h1>
-
-<form action="/submit_quiz" method="POST">
-
-{% for q in questions %}
-
-<div style="margin-bottom:30px;">
-
-    <h3>{{ loop.index }}. {{ q.question }}</h3>
-
-    {% for option in q.options %}
-
-    <input
-        type="radio"
-        name="q{{ loop.parent.index0 }}"
-        value="{{ option }}"
-        required
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
     >
+</head>
 
-    {{ option }}
+<body class="page">
 
-    <br>
+<div class="orb"></div>
+<div class="orb orb-top-right"></div>
 
-    {% endfor %}
+<div class="page-content">
+
+    <div class="page-header">
+
+        <div>
+
+            <p class="page-eyebrow">
+                Quiz Section
+            </p>
+
+            <h1 class="page-title">
+                Attempt Quiz
+            </h1>
+
+        </div>
+
+    </div>
+
+    <form action="/submit_quiz" method="POST">
+
+        <div class="quiz-list">
+
+            {% for q in questions %}
+
+            <div class="quiz-card">
+
+                <div class="quiz-number">
+                    {{ loop.index }}
+                </div>
+
+                <div class="quiz-body">
+
+                    <div class="quiz-question">
+                        {{ q.question }}
+                    </div>
+
+                    {% for option in q.options %}
+
+                    <label class="quiz-answer-wrap">
+
+                        <input
+                            type="radio"
+                            name="q{{ loop.parent.index0 }}"
+                            value="{{ option }}"
+                            required
+                        >
+
+                        <span class="quiz-answer">
+                            {{ option }}
+                        </span>
+
+                    </label>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        <br><br>
+
+        <button type="submit" class="btn btn-primary btn-full">
+            Submit Quiz
+        </button>
+
+    </form>
 
 </div>
-
-{% endfor %}
-
-<button type="submit">
-    Submit Quiz
-</button>
-
-</form>
 
 </body>
 </html>
