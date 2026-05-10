@@ -1,100 +1,292 @@
+# ================================
+# app.py
+# ================================
+
 from flask import Flask, render_template, request, redirect, session
-from flask_sqlalchemy import SQLAlchemy
-from recommender import recommend_courses
+import sqlite3
 
 app = Flask(__name__)
-app.secret_key = 'secretkey'
+app.secret_key = "secret123"
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-db = SQLAlchemy(app)
+# ================================
+# DATABASE CONNECTION
+# ================================
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
-    email = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(100))
-    interest = db.Column(db.String(100))
+def connect_db():
+    conn = sqlite3.connect("database.db")
+    conn.row_factory = sqlite3.Row
+    return conn
 
-@app.route('/')
-def home():
-    return render_template('index.html')
+# ================================
+# CREATE TABLE
+# ================================
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        user = User(
-            name=request.form['name'],
-            email=request.form['email'],
-            password=request.form['password'],
-            interest=request.form['interest']
-        )
+def create_table():
+    conn = connect_db()
 
-        db.session.add(user)
-        db.session.commit()
+    conn.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        email TEXT,
+        password TEXT,
+        interest TEXT
+    )
+    """)
 
-        return redirect('/login')
+    conn.commit()
+    conn.close()
 
-    return render_template('register.html')
+create_table()
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
+# ================================
+# YOUTUBE VIDEOS DATA
+# ================================
 
-        user = User.query.filter_by(
-            email=request.form['email'],
-            password=request.form['password']
-        ).first()
-
-        if user:
-            session['user'] = user.name
-            session['interest'] = user.interest
-            return redirect('/dashboard')
-
-    return render_template('login.html')
-
-@app.route('/dashboard')
-def dashboard():
-
-    if 'user' in session:
-        recommendations = recommend_courses(session['interest'])
-
-        return render_template(
-            'dashboard.html',
-            user=session['user'],
-            recommendations=recommendations
-        )
-
-    return redirect('/login')
-
-@app.route('/admin')
-def admin():
-    users = User.query.all()
-    return render_template('admin.html', users=users)
-
-@app.route('/quiz')
-def quiz():
-
-    questions = [
+courses = {
+    "Python": [
         {
-            'question': 'Which language is used for AI?',
-            'answer': 'Python'
+            "title": "Python Full Course",
+            "link": "https://www.youtube.com/watch?v=_uQrJ0TkZlc"
         },
         {
-            'question': 'Which framework is used?',
-            'answer': 'Flask'
+            "title": "Python Tutorial",
+            "link": "https://www.youtube.com/watch?v=rfscVS0vtbw"
+        },
+        {
+            "title": "Python Projects",
+            "link": "https://www.youtube.com/watch?v=8ext9G7xspg"
+        },
+        {
+            "title": "Flask Tutorial",
+            "link": "https://www.youtube.com/watch?v=Z1RJmh_OqeA"
+        },
+        {
+            "title": "Python OOP",
+            "link": "https://www.youtube.com/watch?v=Ej_02ICOIgs"
+        }
+    ],
+
+    "Web Development": [
+        {
+            "title": "HTML Full Course",
+            "link": "https://www.youtube.com/watch?v=qz0aGYrrlhU"
+        },
+        {
+            "title": "CSS Tutorial",
+            "link": "https://www.youtube.com/watch?v=OXGznpKZ_sA"
+        },
+        {
+            "title": "JavaScript Tutorial",
+            "link": "https://www.youtube.com/watch?v=W6NZfCO5SIk"
+        },
+        {
+            "title": "Responsive Web Design",
+            "link": "https://www.youtube.com/watch?v=srvUrASNj0s"
+        },
+        {
+            "title": "Full Stack Development",
+            "link": "https://www.youtube.com/watch?v=nu_pCVPKzTk"
         }
     ]
+}
 
-    return render_template('quiz.html', questions=questions)
+# ================================
+# QUIZ QUESTIONS
+# ================================
 
-@app.route('/logout')
+quiz_questions = [
+    {
+        "question": "What does AI stand for?",
+        "options": [
+            "Artificial Intelligence",
+            "Advanced Internet",
+            "Automated Input",
+            "Artificial Interface"
+        ],
+        "answer": "Artificial Intelligence"
+    },
+
+    {
+        "question": "Which language is used in Flask?",
+        "options": [
+            "Java",
+            "Python",
+            "PHP",
+            "C++"
+        ],
+        "answer": "Python"
+    },
+
+    {
+        "question": "Which database is used in this project?",
+        "options": [
+            "MongoDB",
+            "Oracle",
+            "SQLite",
+            "Firebase"
+        ],
+        "answer": "SQLite"
+    },
+
+    {
+        "question": "Which tag is used for heading in HTML?",
+        "options": [
+            "<p>",
+            "<div>",
+            "<h1>",
+            "<span>"
+        ],
+        "answer": "<h1>"
+    },
+
+    {
+        "question": "Which framework is used for backend?",
+        "options": [
+            "React",
+            "Angular",
+            "Flask",
+            "Bootstrap"
+        ],
+        "answer": "Flask"
+    }
+]
+
+# ================================
+# HOME PAGE
+# ================================
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+# ================================
+# REGISTER
+# ================================
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+
+    if request.method == "POST":
+
+        name = request.form["name"]
+        email = request.form["email"]
+        password = request.form["password"]
+        interest = request.form["interest"]
+
+        conn = connect_db()
+
+        conn.execute(
+            "INSERT INTO users (name, email, password, interest) VALUES (?, ?, ?, ?)",
+            (name, email, password, interest)
+        )
+
+        conn.commit()
+        conn.close()
+
+        return redirect("/login")
+
+    return render_template("register.html")
+
+# ================================
+# LOGIN
+# ================================
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+
+    if request.method == "POST":
+
+        email = request.form["email"]
+        password = request.form["password"]
+
+        conn = connect_db()
+
+        user = conn.execute(
+            "SELECT * FROM users WHERE email=? AND password=?",
+            (email, password)
+        ).fetchone()
+
+        conn.close()
+
+        if user:
+
+            session["user"] = user["name"]
+            session["interest"] = user["interest"]
+
+            return redirect("/dashboard")
+
+        else:
+            return "Invalid Credentials"
+
+    return render_template("login.html")
+
+# ================================
+# DASHBOARD
+# ================================
+
+@app.route("/dashboard")
+def dashboard():
+
+    if "user" not in session:
+        return redirect("/login")
+
+    interest = session["interest"]
+
+    recommended_videos = courses.get(interest, [])
+
+    return render_template(
+        "dashboard.html",
+        name=session["user"],
+        interest=interest,
+        videos=recommended_videos
+    )
+
+# ================================
+# QUIZ PAGE
+# ================================
+
+@app.route("/quiz")
+def quiz():
+    return render_template(
+        "quiz.html",
+        questions=quiz_questions
+    )
+
+# ================================
+# QUIZ SUBMIT
+# ================================
+
+@app.route("/submit_quiz", methods=["POST"])
+def submit_quiz():
+
+    score = 0
+
+    for i, q in enumerate(quiz_questions):
+
+        user_answer = request.form.get(f"q{i}")
+
+        if user_answer == q["answer"]:
+            score += 1
+
+    return render_template(
+        "result.html",
+        score=score,
+        total=len(quiz_questions)
+    )
+
+# ================================
+# LOGOUT
+# ================================
+
+@app.route("/logout")
 def logout():
     session.clear()
-    return redirect('/')
+    return redirect("/")
 
-if __name__ == '__main__':
+# ================================
+# RUN APP
+# ================================
 
-    with app.app_context():
-        db.create_all()
-
+if __name__ == "__main__":
     app.run(debug=True)
