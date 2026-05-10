@@ -1,17 +1,60 @@
+<!-- ========================= -->
+<!-- result.html -->
+<!-- ========================= -->
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz Result</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
 </head>
-<body>
 
-<h1>Quiz Result</h1>
+<body class="centered-page">
 
-<h2>Your Score: {{ score }}/{{ total }}</h2>
+<div class="orb"></div>
 
-<a href="/dashboard">
-    Back to Dashboard
-</a>
+<div class="content">
+
+    <div class="card">
+
+        <div class="card-header">
+
+            <h1 class="card-title">
+                Quiz Completed
+            </h1>
+
+            <p class="card-subtitle">
+                Your quiz has been submitted successfully.
+            </p>
+
+        </div>
+
+        <div
+            style="
+                font-size: 32px;
+                font-weight: bold;
+                text-align: center;
+                color: #818cf8;
+            "
+        >
+
+            {{ score }}/{{ total }}
+
+        </div>
+
+        <a href="/dashboard" class="btn btn-primary btn-full">
+            Back To Dashboard
+        </a>
+
+    </div>
+
+</div>
 
 </body>
 </html>
