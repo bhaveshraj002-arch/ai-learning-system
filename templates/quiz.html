@@ -1,59 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-
-<title>Quiz</title>
-
-<link rel="stylesheet"
-href="{{ url_for('static', filename='style.css') }}">
-
+    <title>Quiz</title>
 </head>
+<body>
 
-<body class="page">
+<h1>Quiz</h1>
 
-<div class="page-content">
-
-<h1 class="page-title">
-Quiz Module
-</h1>
-
-<div class="quiz-list">
+<form action="/submit_quiz" method="POST">
 
 {% for q in questions %}
 
-<div class="quiz-card">
+<div style="margin-bottom:30px;">
 
-<div class="quiz-number">
-Q
-</div>
+    <h3>{{ loop.index }}. {{ q.question }}</h3>
 
-<div class="quiz-body">
+    {% for option in q.options %}
 
-<div class="quiz-question">
-{{ q.question }}
-</div>
+    <input
+        type="radio"
+        name="q{{ loop.parent.index0 }}"
+        value="{{ option }}"
+        required
+    >
 
-<div class="quiz-answer-wrap">
+    {{ option }}
 
-<div class="quiz-answer-label">
-Answer
-</div>
+    <br>
 
-<div class="quiz-answer">
-{{ q.answer }}
-</div>
-
-</div>
-
-</div>
+    {% endfor %}
 
 </div>
 
 {% endfor %}
 
-</div>
+<button type="submit">
+    Submit Quiz
+</button>
 
-</div>
+</form>
 
 </body>
 </html>
